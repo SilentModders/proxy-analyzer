@@ -1,0 +1,8 @@
+# SSL Certs/keys
+private/
+
+# Compiled python
+*.pyc
+
+# Windows dev shortcuts
+*.lnk
