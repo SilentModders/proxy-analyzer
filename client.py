@@ -3,6 +3,7 @@ import sys
 import ssl
 import socket
 from socketserver import StreamRequestHandler
+from utils import UDPStreamSocket
 
 
 class SSLTCPClient(object):
@@ -24,6 +25,18 @@ class SSLTCPClient(object):
                 self.handler(ssock, (self.hostname, self.port), self)
 
 
+class UDPClient(object):
+    def __init__(self, hostname, port, handler):
+        self.hostname = hostname
+        self.port = port
+        self.handler = handler
+
+    def startup(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0) as ssock:
+            usock = UDPStreamSocket(ssock, (self.hostname, self.port))
+            self.handler(usock, (self.hostname, self.port), self)
+
+
 class HelloHandler(StreamRequestHandler):
     def handle(self):
         print('Connected to {}:{}'.format(*self.client_address))
@@ -36,7 +49,7 @@ def main(argv):
     PORT = 7777
     ADDR = 'localhost'
 
-    client = SSLTCPClient(ADDR, PORT, HelloHandler)
+    client = UDPClient(ADDR, PORT, HelloHandler)
     client.startup()
 
     print('Done')
