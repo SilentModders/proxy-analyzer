@@ -12,11 +12,13 @@ class UDPStreamSocket(object):
         return self._sock.sendto(data, self.addr)
 
     def sendall(self, data):
-        count = 0
         with memoryview(data) as view, view.cast("B") as byte_view:
             amount = len(byte_view)
-            while count < amount:
-                    count += self.send(byte_view[count:])
+        if amount > 65507:
+            raise ValueErrorError('Data exceeded max datagram size')
+        count = self.send(data)
+        if count < amount:
+            raise IOError('Data exceeded max datagram size')
 
     def fileno(self):
         return self._sock.fileno()
