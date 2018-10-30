@@ -47,7 +47,7 @@ class SSLTCPServer(object):
 
 class UpperStreamHandler(StreamRequestHandler):
     def handle(self):
-        data = self.rfile.readline().strip()
+        data = self.rfile.readline()
         print("{} wrote:".format(self.client_address[0]))
         print(data)
         self.wfile.write(data.upper())
