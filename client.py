@@ -41,8 +41,8 @@ class HelloHandler(StreamRequestHandler):
     def handle(self):
         print('Connected to {}:{}'.format(*self.client_address))
         self.wfile.write(b'Hello!\n')
-        self.data = self.rfile.readline().strip()
-        print(self.data)
+        data = self.rfile.readline().strip()
+        print(data)
 
 
 def main(argv):
