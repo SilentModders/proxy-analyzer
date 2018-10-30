@@ -1,7 +1,11 @@
+import io
+
+
 class UDPStreamSocket(object):
-    def __init__(self, socket, addr):
+    def __init__(self, socket, addr, data=None):
         self._sock = socket
         self.addr = addr
+        self.data = data
 
     def send(self, data):
         return self._sock.sendto(data, self.addr)
@@ -13,5 +17,14 @@ class UDPStreamSocket(object):
             while count < amount:
                     count += self.send(byte_view[count:])
 
-    def makefile(self, mode, bufsize):
-        return self._sock.makefile(mode, bufsize)
+    def makefile(self, mode, *args, **kwargs):
+        if 'w' in mode:
+            raise ValueError('UDP stream writing is not supported')
+        elif 'r' in mode:
+            if 'b' in mode:
+                factory = io.BytesIO
+            else:
+                factory = io.StringIO
+            return factory(self.data)
+        else:
+            raise ValueError('Unsupported mode {}'.format(mode))

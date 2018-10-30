@@ -56,7 +56,7 @@ class UpperStreamHandler(StreamRequestHandler):
 
 def udp_stream_wrap(client, client_addr, server):
     data, socket = client
-    stream = UDPStreamSocket(socket, client_addr)
+    stream = UDPStreamSocket(socket, client_addr, data)
     UpperStreamHandler(stream, client_addr, server)
 
 
@@ -64,11 +64,6 @@ class StreamUDPServer(UDPServer):
     # The calculated max payload size is 65507
     # Let's stay under that
     max_packet_size = 32768
-
-    def get_request(self):
-        data, client_addr = self.socket.recvfrom(
-            self.max_packet_size, socket.MSG_PEEK)
-        return (data, self.socket), client_addr
 
 
 def main(argv):
