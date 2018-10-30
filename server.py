@@ -18,11 +18,11 @@ class SSLTCPServer(object):
             purpose=ssl.Purpose.CLIENT_AUTH)
         self.context.load_cert_chain('private/cert.pem', 'private/private.key')
 
-    def startup(self, backlog=None):
+    def startup(self, backlog=5):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.bind(self.bind)
-        self.socket.listen()
+        self.socket.listen(backlog)
         self.socket = self.context.wrap_socket(self.socket, server_side=True)
 
     def serve_one_client(self):
