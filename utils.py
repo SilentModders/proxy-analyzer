@@ -1,4 +1,5 @@
 import io
+from socketserver import _SocketWriter
 
 
 class UDPStreamSocket(object):
@@ -17,14 +18,17 @@ class UDPStreamSocket(object):
             while count < amount:
                     count += self.send(byte_view[count:])
 
+    def fileno(self):
+        return self._sock.fileno()
+
     def makefile(self, mode, *args, **kwargs):
+        if ('w' in mode) == ('r' in mode):  # Logical XNOR
+            raise ValueError('Unsupported mode {}'.format(mode))
         if 'w' in mode:
-            raise ValueError('UDP stream writing is not supported')
-        elif 'r' in mode:
+            return _SocketWriter(self)
+        if 'r' in mode:
             if 'b' in mode:
                 factory = io.BytesIO
             else:
                 factory = io.StringIO
             return factory(self.data)
-        else:
-            raise ValueError('Unsupported mode {}'.format(mode))
