@@ -14,7 +14,7 @@ class SSLTCPServer(object):
         self._shutdown = False
         self.socket = None
 
-        #FIXME: SSL should be a subclass
+        # FIXME: SSL should be a subclass
         self.context = ssl.create_default_context(
             purpose=ssl.Purpose.CLIENT_AUTH)
         self.context.load_cert_chain('private/cert.pem', 'private/private.key')

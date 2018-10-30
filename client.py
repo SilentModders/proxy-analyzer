@@ -12,7 +12,7 @@ class SSLTCPClient(object):
         self.port = port
         self.handler = handler
 
-        #FIXME: SSL should be a subclass
+        # FIXME: SSL should be a subclass
         self.context = ssl.create_default_context(
             purpose=ssl.Purpose.SERVER_AUTH)
         self.context.load_verify_locations('private/cert.pem')
