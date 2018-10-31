@@ -16,15 +16,22 @@ class BaseServer(object):
 
     def startup(self):
         self.socket = self.make_socket()
+        self.do_bind()
+        self.do_listen()
+
+    def do_bind(self):
         self.socket.bind(self.bind)
 
+    def do_listen(self):
+        self.socket.listen()
+
     def serve_one_client(self):
-        (client, address) = self.accept_client()
+        (client, address) = self.do_accept()
         with client:
             self.handle_client(client, address)
 
     def handle_client(self, client, address):
-        # FIXME: Should use some kind of threading mixin
+        # FIXME: Factor out thread stuff
         thread = Thread(target=self.handler, args=(client, address, self))
         thread.start()
 
@@ -49,23 +56,18 @@ class SSLTCPServer(BaseServer):
     def __init__(self, bind, handler):
         super().__init__(bind, handler)
 
-        # FIXME: SSL should be a subclass
+        # FIXME: Factor out SSL stuff
         self.context = ssl.create_default_context(
             purpose=ssl.Purpose.CLIENT_AUTH)
         self.context.load_cert_chain('private/cert.pem', 'private/private.key')
 
-    def startup(self):
-        super().startup()
-        self.socket.listen()
-        self.socket = self.context.wrap_socket(self.socket, server_side=True)
-
     def make_socket(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        # FIXME: Should SSL go here?
-        return sock
+        ssock = self.context.wrap_socket(sock, server_side=True)
+        return ssock
 
-    def accept_client(self):
+    def do_accept(self):
         return self.socket.accept()
 
 
