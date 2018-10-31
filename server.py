@@ -2,7 +2,7 @@
 import sys
 import ssl
 import socket
-from socketserver import UDPServer, StreamRequestHandler
+from socketserver import StreamRequestHandler
 from threading import Thread
 from utils import UDPStreamSocket
 
@@ -71,6 +71,24 @@ class SSLTCPServer(BaseServer):
         return self.socket.accept()
 
 
+class UDPServer(BaseServer):
+    # The calculated max payload size is 65507
+    # Let's stay under that
+    max_packet_size = 32768
+
+    def make_socket(self):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        return sock
+
+    def do_listen(self):
+        pass
+
+    def do_accept(self):
+        data, client_addr = self.socket.recvfrom(self.max_packet_size)
+        sock = UDPStreamSocket(self.socket, client_addr, data)
+        return sock, client_addr
+
+
 class UpperStreamHandler(StreamRequestHandler):
     def handle(self):
         data = self.rfile.readline()
@@ -79,24 +97,17 @@ class UpperStreamHandler(StreamRequestHandler):
         self.wfile.write(data.upper())
 
 
-def udp_stream_wrap(client, client_addr, server):
-    data, socket = client
-    stream = UDPStreamSocket(socket, client_addr, data)
-    UpperStreamHandler(stream, client_addr, server)
-
-
-class StreamUDPServer(UDPServer):
-    # The calculated max payload size is 65507
-    # Let's stay under that
-    max_packet_size = 32768
-
-
 def main(argv):
     PORT = 7777
     BIND = '0.0.0.0'
 
-    server = StreamUDPServer((BIND, PORT), udp_stream_wrap)
-    server.handle_request()
+    # server = StreamUDPServer((BIND, PORT), udp_stream_wrap)
+    # server.handle_request()
+    # server = SSLTCPServer((BIND, PORT), UpperStreamHandler)
+    server = UDPServer((BIND, PORT), UpperStreamHandler)
+    server.startup()
+    server.serve_one_client()
+    server.shutdown()
 
     print('Done')
     return 0
