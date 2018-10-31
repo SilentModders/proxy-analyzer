@@ -7,31 +7,24 @@ from threading import Thread
 from utils import UDPStreamSocket
 
 
-class SSLTCPServer(object):
+class BaseServer(object):
     def __init__(self, bind, handler):
         self.bind = bind
         self.handler = handler
         self._shutdown = False
         self.socket = None
 
-        # FIXME: SSL should be a subclass
-        self.context = ssl.create_default_context(
-            purpose=ssl.Purpose.CLIENT_AUTH)
-        self.context.load_cert_chain('private/cert.pem', 'private/private.key')
-
-    def startup(self, backlog=5):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    def startup(self):
+        self.socket = self.make_socket()
         self.socket.bind(self.bind)
-        self.socket.listen(backlog)
-        self.socket = self.context.wrap_socket(self.socket, server_side=True)
 
     def serve_one_client(self):
-        (client, address) = self.socket.accept()
+        (client, address) = self.accept_client()
         with client:
             self.handle_client(client, address)
 
     def handle_client(self, client, address):
+        # FIXME: Should use some kind of threading mixin
         thread = Thread(target=self.handler, args=(client, address, self))
         thread.start()
 
@@ -44,6 +37,36 @@ class SSLTCPServer(object):
             self.socket.close()
             self.socket = None
         self._shutdown = True
+
+    def make_socket(self):
+        raise NotImplementedError
+
+    def accept_client(self):
+        raise NotImplementedError
+
+
+class SSLTCPServer(BaseServer):
+    def __init__(self, bind, handler):
+        super().__init__(bind, handler)
+
+        # FIXME: SSL should be a subclass
+        self.context = ssl.create_default_context(
+            purpose=ssl.Purpose.CLIENT_AUTH)
+        self.context.load_cert_chain('private/cert.pem', 'private/private.key')
+
+    def startup(self):
+        super().startup()
+        self.socket.listen()
+        self.socket = self.context.wrap_socket(self.socket, server_side=True)
+
+    def make_socket(self):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # FIXME: Should SSL go here?
+        return sock
+
+    def accept_client(self):
+        return self.socket.accept()
 
 
 class UpperStreamHandler(StreamRequestHandler):
