@@ -101,9 +101,6 @@ def main(argv):
     PORT = 7777
     BIND = '0.0.0.0'
 
-    # server = StreamUDPServer((BIND, PORT), udp_stream_wrap)
-    # server.handle_request()
-    # server = SSLTCPServer((BIND, PORT), UpperStreamHandler)
     server = UDPServer((BIND, PORT), UpperStreamHandler)
     server.startup()
     server.serve_one_client()
