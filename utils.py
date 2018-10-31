@@ -8,6 +8,15 @@ class UDPStreamSocket(object):
         self.addr = addr
         self.data = data
 
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, value, traceback):
+        self.close()
+
+    def close(self):
+        pass    # _sock is not ours
+
     def send(self, data):
         return self._sock.sendto(data, self.addr)
 
@@ -29,8 +38,11 @@ class UDPStreamSocket(object):
         if 'w' in mode:
             return _SocketWriter(self)
         if 'r' in mode:
-            if 'b' in mode:
-                factory = io.BytesIO
+            if self.data is not None:
+                if 'b' in mode:
+                    factory = io.BytesIO
+                else:
+                    factory = io.StringIO
+                return factory(self.data)
             else:
-                factory = io.StringIO
-            return factory(self.data)
+                return self._sock.makefile(mode)
