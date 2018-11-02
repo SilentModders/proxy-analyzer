@@ -31,9 +31,7 @@ class BaseServer(object):
             self.handle_client(client, address)
 
     def handle_client(self, client, address):
-        # FIXME: Factor out thread stuff
-        thread = Thread(target=self.handler, args=(client, address, self))
-        thread.start()
+        self.handler(client, address, self)
 
     def serve_forever(self):
         while not self._shutdown:
@@ -52,26 +50,45 @@ class BaseServer(object):
         raise NotImplementedError
 
 
-class SSLTCPServer(BaseServer):
-    def __init__(self, bind, handler):
-        super().__init__(bind, handler)
+class ThreadingMixIn(object):
+    def handle_client(self, client, address):
+        thread = Thread(target=super().handle_client, args=(client, address))
+        thread.start()
 
-        # FIXME: Factor out SSL stuff
+
+class TLSMixIn(object):
+    certificate_path = 'private/cert.pem'
+    private_key_path = 'private/private.key'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
         self.context = ssl.create_default_context(
             purpose=ssl.Purpose.CLIENT_AUTH)
-        self.context.load_cert_chain('private/cert.pem', 'private/private.key')
+        self.context.load_cert_chain(
+            self.certificate_path, self.private_key_path)
 
+    def make_socket(self):
+        sock = super().make_socket()
+        ssock = self.context.wrap_socket(sock, server_side=True)
+        return ssock
+
+
+class TCPServer(ThreadingMixIn, BaseServer):
     def make_socket(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        ssock = self.context.wrap_socket(sock, server_side=True)
-        return ssock
+        return sock
 
     def do_accept(self):
         return self.socket.accept()
 
 
-class UDPServer(BaseServer):
+class TLSServer(TLSMixIn, TCPServer):
+    pass
+
+
+class UDPServer(ThreadingMixIn, BaseServer):
     # The calculated max payload size is 65507
     # Let's stay under that
     max_packet_size = 32768
@@ -101,7 +118,7 @@ def main(argv):
     PORT = 7777
     BIND = '0.0.0.0'
 
-    server = UDPServer((BIND, PORT), UpperStreamHandler)
+    server = TLSServer((BIND, PORT), UpperStreamHandler)
     server.startup()
     server.serve_one_client()
     server.shutdown()
