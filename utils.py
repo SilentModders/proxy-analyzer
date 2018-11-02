@@ -3,10 +3,11 @@ from socketserver import _SocketWriter
 
 
 class UDPStreamSocket(object):
-    def __init__(self, socket, addr, data=None):
+    def __init__(self, socket, addr, data=None, self_close=False):
         self._sock = socket
         self.addr = addr
         self.data = data
+        self.self_close = self_close
 
     def __enter__(self):
         pass
@@ -15,7 +16,8 @@ class UDPStreamSocket(object):
         self.close()
 
     def close(self):
-        pass    # _sock is not ours
+        if self.self_close:
+            self._sock.close()
 
     def send(self, data):
         return self._sock.sendto(data, self.addr)
