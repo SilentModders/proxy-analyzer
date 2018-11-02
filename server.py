@@ -57,8 +57,8 @@ class ThreadingMixIn(object):
 
 
 class TLSMixIn(object):
-    certificate_path = 'private/cert.pem'
-    private_key_path = 'private/private.key'
+    certificate_path = 'private/server.pem'
+    private_key_path = 'private/server.key'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

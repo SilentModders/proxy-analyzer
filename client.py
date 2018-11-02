@@ -35,7 +35,7 @@ class UDPClient(BaseClient):
 
 
 class TLSMixIn(object):
-    certifcate_path = 'private/cert.pem'
+    certifcate_path = 'private/server.pem'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

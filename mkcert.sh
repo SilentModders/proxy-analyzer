@@ -1,4 +1,9 @@
 #!/bin/sh
 # Generate self-signed SSL
-cd private
-openssl req -newkey rsa:2048 -nodes -keyout private.key -x509 -days 365 -out cert.pem -subj '/CN=localhost'
+
+PRIVATE_DIR="private"
+HOSTNAME="localhost"
+CERTNAME="${1:-server}"
+
+cd "$PRIVATE_DIR" && \
+openssl req -newkey rsa -nodes -keyout "$CERTNAME.key" -x509 -days 365 -out "$CERTNAME.pem" -subj "/CN=$HOSTNAME"
