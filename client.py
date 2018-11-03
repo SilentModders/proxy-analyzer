@@ -3,7 +3,7 @@ import sys
 import ssl
 import socket
 from socketserver import StreamRequestHandler
-from utils import UDPStreamSocket
+from utils import UDPStreamSocket, create_service
 
 
 class BaseClient(object):
@@ -53,6 +53,15 @@ class TLSClient(TLSMixIn, TCPClient):
     pass
 
 
+def create_client(url, handler):
+    clients = {
+        'tcp': TCPClient,
+        'udp': UDPClient,
+        'tls': TLSClient,
+    }
+    return create_service(clients, url, handler)
+
+
 class HelloHandler(StreamRequestHandler):
     def handle(self):
         print('Connected to {}:{}'.format(*self.client_address))
@@ -62,10 +71,7 @@ class HelloHandler(StreamRequestHandler):
 
 
 def main(argv):
-    PORT = 7777
-    ADDR = 'localhost'
-
-    client = TLSClient((ADDR, PORT), HelloHandler)
+    client = create_client('tls://localhost:7777', HelloHandler)
     client.startup()
 
     print('Done')

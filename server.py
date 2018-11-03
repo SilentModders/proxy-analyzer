@@ -4,7 +4,7 @@ import ssl
 import socket
 from socketserver import StreamRequestHandler
 from threading import Thread
-from utils import UDPStreamSocket
+from utils import UDPStreamSocket, create_service
 
 
 class BaseServer(object):
@@ -105,6 +105,15 @@ class TLSServer(TLSMixIn, TCPServer):
     pass
 
 
+def create_server(url, handler):
+    servers = {
+        'tcp': TCPServer,
+        'udp': UDPServer,
+        'tls': TLSServer,
+    }
+    return create_service(servers, url, handler)
+
+
 class UpperStreamHandler(StreamRequestHandler):
     def handle(self):
         data = self.rfile.readline()
@@ -114,10 +123,7 @@ class UpperStreamHandler(StreamRequestHandler):
 
 
 def main(argv):
-    PORT = 7777
-    BIND = '0.0.0.0'
-
-    server = TLSServer((BIND, PORT), UpperStreamHandler)
+    server = create_server('tls://localhost:7777', UpperStreamHandler)
     server.startup()
     server.serve_one_client()
     server.shutdown()
