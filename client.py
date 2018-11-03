@@ -7,9 +7,8 @@ from utils import UDPStreamSocket
 
 
 class BaseClient(object):
-    def __init__(self, hostname, port, handler):
-        self.hostname = hostname
-        self.port = port
+    def __init__(self, endpoint, handler):
+        self.hostname, self.port = endpoint
         self.handler = handler
 
     def make_socket(self):
@@ -66,7 +65,7 @@ def main(argv):
     PORT = 7777
     ADDR = 'localhost'
 
-    client = TLSClient(ADDR, PORT, HelloHandler)
+    client = TLSClient((ADDR, PORT), HelloHandler)
     client.startup()
 
     print('Done')
