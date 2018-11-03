@@ -2,18 +2,20 @@
 import sys
 from time import sleep
 from threading import Thread
-from examples.server import main as server
-from examples.client import main as client
+from examples.server import server_service
+from examples.client import client_service
+
 
 def main(argv):
     url = 'tls://localhost:7777'
-    server_thread = Thread(target=server, args=(url, ))
-    client_thread = Thread(target=client, args=(url, ))
+    server = server_service(url)
+    client = client_service(url)
+    server.startup()
+    server_thread = Thread(target=server.serve_one_client)
     server_thread.start()
-    client_thread.start()
-    client_thread.join()
-    print('', end='', flush=True)
+    client.startup()
     server_thread.join()
+    server.shutdown()
     
     return 0
 
