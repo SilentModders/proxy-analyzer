@@ -13,7 +13,12 @@ class UpperStreamHandler(StreamRequestHandler):
 
 
 def main(argv):
-    server = create_server('tls://localhost:7777', UpperStreamHandler)
+    if len(argv) < 2:
+        print('Usage: {0} protocol-url\n\teg: {0} {1}'.format(
+            argv[0], 'tls://localhost:443'
+        ))
+        return 1
+    server = create_server(argv[1], UpperStreamHandler)
     server.startup()
     server.serve_forever()
     server.shutdown()
