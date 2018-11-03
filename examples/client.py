@@ -12,13 +12,17 @@ class HelloHandler(StreamRequestHandler):
         print(data)
 
 
+def client_service(url):
+    return create_client(url, HelloHandler)
+
+
 def main(argv):
     if len(argv) < 2:
         print('Usage: {0} protocol-url\n\teg: {0} {1}'.format(
             argv[0], 'tls://localhost:443'
         ))
         return 1
-    client = create_client(argv[1], HelloHandler)
+    client = client_service(argv[1])
     client.startup()
     return 0
 
