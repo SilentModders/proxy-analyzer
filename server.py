@@ -83,11 +83,6 @@ class TCPServer(ThreadingMixIn, BaseServer):
     def do_accept(self):
         return self.socket.accept()
 
-
-class TLSServer(TLSMixIn, TCPServer):
-    pass
-
-
 class UDPServer(ThreadingMixIn, BaseServer):
     # The calculated max payload size is 65507
     # Let's stay under that
@@ -104,6 +99,10 @@ class UDPServer(ThreadingMixIn, BaseServer):
         data, client_addr = self.socket.recvfrom(self.max_packet_size)
         sock = UDPStreamSocket(self.socket, client_addr, data)
         return sock, client_addr
+
+
+class TLSServer(TLSMixIn, TCPServer):
+    pass
 
 
 class UpperStreamHandler(StreamRequestHandler):
