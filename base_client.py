@@ -1,7 +1,7 @@
 import ssl
 import socket
 from socketserver import StreamRequestHandler
-from utils import UDPStreamSocket, create_service
+from utils import UDPStreamSocket, create_service, ServiceProgram
 
 
 class BaseClient(object):
@@ -58,3 +58,16 @@ def create_client(url, handler):
         'tls': TLSClient,
     }
     return create_service(clients, url, handler)
+
+
+class ClientProgram(ServiceProgram):
+    handler = None
+
+    @classmethod
+    def create_client(cls, url):
+        return create_client(url, cls.handler)
+
+    @classmethod
+    def run_service(cls, url):
+        client = cls.create_client(url)
+        client.startup()

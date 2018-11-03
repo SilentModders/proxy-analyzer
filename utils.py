@@ -94,3 +94,19 @@ def create_service(services, url, handler):
         raise ValueError(msg)
     else:
         return services[protocol]((host, port), handler)
+
+
+class ServiceProgram(object):
+    @classmethod
+    def run_service(cls, url):
+        raise NotImplementedError
+
+    @classmethod
+    def main(cls):
+        if len(argv) < 2:
+            print('Usage: {0} protocol-url\n\teg: {0} {1}'.format(
+                argv[0], 'tls://localhost:443'
+            ))
+            return 1
+        cls.run_service(argv[1])
+        return 0

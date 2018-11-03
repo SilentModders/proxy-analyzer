@@ -2,7 +2,7 @@ import ssl
 import socket
 from socketserver import StreamRequestHandler
 from threading import Thread
-from utils import UDPStreamSocket, create_service
+from utils import UDPStreamSocket, create_service, ServiceProgram
 
 
 class BaseServer(object):
@@ -118,3 +118,18 @@ class UpperStreamHandler(StreamRequestHandler):
         print("{} wrote:".format(self.client_address[0]))
         print(data)
         self.wfile.write(data.upper())
+
+
+class ServerProgram(ServiceProgram):
+    handler = None
+
+    @classmethod
+    def create_server(cls, url):
+        return create_server(url, cls.handler)
+
+    @classmethod
+    def run_service(cls, url):
+        server = cls.create_server(url)
+        server.startup()
+        server.serve_forever()
+        server.shutdown()
