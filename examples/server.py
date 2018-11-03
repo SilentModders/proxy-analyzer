@@ -6,10 +6,11 @@ from base_server import ServerProgram
 
 class UpperStreamHandler(StreamRequestHandler):
     def handle(self):
-        data = self.rfile.readline()
-        print("{} wrote:".format(self.client_address[0]))
-        print(data)
-        self.wfile.write(data.upper())
+        while(True):
+            data = self.rfile.readline()
+            print(data, flush=True)
+            if not data:
+                return
 
 
 class UpperServer(ServerProgram):
