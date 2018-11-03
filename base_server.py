@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-import sys
 import ssl
 import socket
 from socketserver import StreamRequestHandler
@@ -120,17 +118,3 @@ class UpperStreamHandler(StreamRequestHandler):
         print("{} wrote:".format(self.client_address[0]))
         print(data)
         self.wfile.write(data.upper())
-
-
-def main(argv):
-    server = create_server('tls://localhost:7777', UpperStreamHandler)
-    server.startup()
-    server.serve_one_client()
-    server.shutdown()
-
-    print('Done')
-    return 0
-
-
-if __name__ == '__main__':
-    sys.exit(main(sys.argv))

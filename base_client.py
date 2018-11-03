@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-import sys
 import ssl
 import socket
 from socketserver import StreamRequestHandler
@@ -60,23 +58,3 @@ def create_client(url, handler):
         'tls': TLSClient,
     }
     return create_service(clients, url, handler)
-
-
-class HelloHandler(StreamRequestHandler):
-    def handle(self):
-        print('Connected to {}:{}'.format(*self.client_address))
-        self.wfile.write(b'Hello!\n')
-        data = self.rfile.readline().strip()
-        print(data)
-
-
-def main(argv):
-    client = create_client('tls://localhost:7777', HelloHandler)
-    client.startup()
-
-    print('Done')
-    return 0
-
-
-if __name__ == '__main__':
-    sys.exit(main(sys.argv))
