@@ -17,4 +17,4 @@ class HelloClient(ClientProgram):
 
 
 if __name__ == '__main__':
-    sys.exit(HelloClient.main(argv))
+    sys.exit(HelloClient.main(sys.argv))

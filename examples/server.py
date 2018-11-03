@@ -17,4 +17,4 @@ class UpperServer(ServerProgram):
 
 
 if __name__ == '__main__':
-    sys.exit(UpperServer.main(argv))
+    sys.exit(UpperServer.main(sys.argv))

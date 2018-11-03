@@ -102,7 +102,7 @@ class ServiceProgram(object):
         raise NotImplementedError
 
     @classmethod
-    def main(cls):
+    def main(cls, argv):
         if len(argv) < 2:
             print('Usage: {0} protocol-url\n\teg: {0} {1}'.format(
                 argv[0], 'tls://localhost:443'
