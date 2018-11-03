@@ -1,6 +1,26 @@
 import io
 import re
-from socketserver import _SocketWriter
+
+
+class SocketWriter(io.BufferedIOBase):
+    """
+    Lifted straight from cpython.
+    Allows file writing on non-stream sockets
+    """
+
+    def __init__(self, sock):
+        self._sock = sock
+
+    def writable(self):
+        return True
+
+    def write(self, b):
+        self._sock.sendall(b)
+        with memoryview(b) as view:
+            return view.nbytes
+
+    def fileno(self):
+        return self._sock.fileno()
 
 
 class UDPStreamSocket(object):
@@ -39,7 +59,7 @@ class UDPStreamSocket(object):
         if ('w' in mode) == ('r' in mode):  # Logical XNOR
             raise ValueError('Unsupported mode {}'.format(mode))
         if 'w' in mode:
-            return _SocketWriter(self)
+            return SocketWriter(self)
         if 'r' in mode:
             if self.data is not None:
                 if 'b' in mode:
