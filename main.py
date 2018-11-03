@@ -2,14 +2,14 @@
 import sys
 from time import sleep
 from threading import Thread
-from examples.client import HelloClient
-from examples.server import UpperServer
+from examples.countersign.client import Client
+from examples.countersign.server import Server
 
 
 def main(argv):
     url = 'tls://localhost:7777'
-    server = UpperServer.create_server(url)
-    client = HelloClient.create_client(url)
+    server = Server.create_server(url)
+    client = Client.create_client(url)
     server.startup()
     server_thread = Thread(target=server.serve_one_client)
     server_thread.start()

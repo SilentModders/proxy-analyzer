@@ -4,7 +4,7 @@ from socketserver import StreamRequestHandler
 from base_client import ClientProgram
 
 
-class HelloHandler(StreamRequestHandler):
+class Handler(StreamRequestHandler):
     def handle(self):
         print('Connected to {}:{}'.format(*self.client_address))
         self.wfile.write(b'Hello!\n')
@@ -12,9 +12,9 @@ class HelloHandler(StreamRequestHandler):
         print(data)
 
 
-class HelloClient(ClientProgram):
-    handler = HelloHandler
+class Client(ClientProgram):
+    handler = Handler
 
 
 if __name__ == '__main__':
-    sys.exit(HelloClient.main(sys.argv))
+    sys.exit(Client.main(sys.argv))

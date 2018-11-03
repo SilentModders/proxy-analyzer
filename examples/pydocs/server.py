@@ -4,7 +4,7 @@ from socketserver import StreamRequestHandler
 from base_server import ServerProgram
 
 
-class UpperStreamHandler(StreamRequestHandler):
+class Handler(StreamRequestHandler):
     def handle(self):
         data = self.rfile.readline()
         print("{} wrote:".format(self.client_address[0]))
@@ -12,9 +12,9 @@ class UpperStreamHandler(StreamRequestHandler):
         self.wfile.write(data.upper())
 
 
-class UpperServer(ServerProgram):
-    handler = UpperStreamHandler
+class Server(ServerProgram):
+    handler = Handler
 
 
 if __name__ == '__main__':
-    sys.exit(UpperServer.main(sys.argv))
+    sys.exit(Server.main(sys.argv))
