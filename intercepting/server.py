@@ -11,7 +11,7 @@ class Request(object):
     def __init__(self, method, url, http_ver=None, headers=None, data=None):
         self.method = method
         self.url = url
-        self.http_ver = http_ver or 'HTTP/1.1'
+        self.http_ver = http_ver or b'HTTP/1.1'
         self.headers = headers or {}
         self.data = data
 
@@ -21,9 +21,11 @@ class Request(object):
             lines.append('{}: {}'.format(key, value))
 
     def __str__(self):
-        data = '{} {} {}'.format(self.method, self.url, self.http_ver)
+        data = '{} {} {}'.format(
+            self.method.decode(), self.url.decode(), self.http_ver.decode()
+        )
         for key, value in self.headers.items():
-            data += '\n{}: {}'.format(key, value)
+            data += '\n{}: {}'.format(key.decode(), value)
         return data
 
 
@@ -98,7 +100,7 @@ class HTTPReader(object):
         request = self.parse_head(head)
         if not request:
             return None
-        length_headers = request.headers.get('content-length', [])
+        length_headers = request.headers.get(b'content-length', [])
         if length_headers:
             if len(length_headers) > 1:
                 raise ValueError('"content-length" may only appear once')
