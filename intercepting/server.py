@@ -121,6 +121,16 @@ class HTTPReader(object):
 
 class Handler(StreamRequestHandler):
     canned_500 = b'HTTP 500 E\r\nConnection: Closed\r\n\r\nGoodbye'
+
+    def require_request_host(self, request):
+        hosts = request.headers.get(b'host', [])
+        if not hosts:
+            raise ValueError('"host" header is required')
+        elif len(hosts) > 1:
+            raise ValueError('"host" may only appear once')
+        else:
+            return hosts[0]
+
     def handle(self):
         try:
             request = HTTPReader().read_request(self.rfile)
