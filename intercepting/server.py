@@ -20,7 +20,6 @@ class Request(object):
         for key, value in self.headers.items():
             lines.append('{}: {}'.format(key, value))
 
-
     def __str__(self):
         data = '{} {} {}'.format(self.method, self.url, self.http_ver)
         for key, value in self.headers.items():
@@ -45,7 +44,7 @@ class HTTPReader(object):
                 break
             headers += 1
         return request
-            
+
     def parse_method_line(self, line):
         words = line.split(b' ')
         if len(words) != 3:
@@ -56,7 +55,7 @@ class HTTPReader(object):
             'url': words[1].strip(),
             'http_ver': words[2].strip(),
         }
-        
+
     def parse_header(self, header):
         parts = header.split(b':', 1)
         if len(parts) != 2:
@@ -66,7 +65,7 @@ class HTTPReader(object):
             'key': parts[0].strip(),
             'value': parts[1].strip(),
         }
-        
+
     def parse_head(self, data):
         data = [_ for _ in data.split(BREAK) if _]
         if not data:
@@ -83,8 +82,7 @@ class HTTPReader(object):
                 value = header_data['value']
                 headers[key] = headers.get(key, []) + [value]
         return Request(method, url, http_ver, headers)
-        
-        
+
     def read_data(self, rfile):
         data = b''
         lines = 0
@@ -94,7 +92,7 @@ class HTTPReader(object):
             if not line:
                 return data
             lines += 1
-        
+
     def read_request(self, rfile):
         head = self.read_head(rfile)
         request = self.parse_head(head)
