@@ -38,7 +38,7 @@ class TLSMixIn(object):
         super().__init__(*args, **kwargs)
 
         self.context = ssl.create_default_context(
-           purpose=ssl.Purpose.SERVER_AUTH)
+            purpose=ssl.Purpose.SERVER_AUTH)
         self.context.load_verify_locations(self.certifcate_path)
 
     def make_socket(self):

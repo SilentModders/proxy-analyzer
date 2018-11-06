@@ -7,12 +7,14 @@ from base_server import ServerProgram
 
 BREAK = b'\r\n'
 
+
 class BytesWriter(object):
     def __init__(self, fp):
         self.fp = fp
 
     def write(self, data):
         self.fp.write(data.decode())
+
 
 class Request(object):
     def __init__(self, method, url, http_ver=None, headers=None, data=None):

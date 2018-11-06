@@ -16,7 +16,7 @@ def main(argv):
     client.startup()
     server_thread.join()
     server.shutdown()
-    
+
     return 0
 
 
