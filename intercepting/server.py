@@ -7,6 +7,13 @@ from base_server import ServerProgram
 
 BREAK = b'\r\n'
 
+class BytesWriter(object):
+    def __init__(self, fp):
+        self.fp = fp
+
+    def write(self, data):
+        self.fp.write(data.decode())
+
 class Request(object):
     def __init__(self, method, url, http_ver=None, headers=None, data=None):
         self.method = method
@@ -136,9 +143,19 @@ class Handler(StreamRequestHandler):
             request = HTTPReader().read_request(self.rfile)
             print('\nRequest:')
             print(str(request), flush=True)
-            self.wfile.write(self.canned_500)
+            if request:
+                destination = self.require_request_host(request)
+                print('To', destination)
+                print('---------')
+                request.write(BytesWriter(sys.stdout))
+                print('---------')
         finally:
+            try:
+                self.wfile.write(self.canned_500)
+            except:
+                pass
             sys.stderr.flush()
+            sys.stdout.flush()
 
 
 class Server(ServerProgram):
