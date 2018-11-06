@@ -5,6 +5,7 @@ import traceback
 from socketserver import StreamRequestHandler
 from base_server import ServerProgram
 
+BREAK = b'\r\n'
 
 class Request(object):
     def __init__(self, method, url, http_ver=None, headers=None, data=None):
@@ -13,21 +14,26 @@ class Request(object):
         self.http_ver = http_ver or 'HTTP/1.1'
         self.headers = headers or {}
         self.data = data
-        
+
+    def write(self, wfile):
+        lines = ['{} {} {}'.format(self.method, self.url, self.http_ver)]
+        for key, value in self.headers.items():
+            lines.append('{}: {}'.format(key, value))
+
+
     def __str__(self):
         data = '{} {} {}'.format(self.method, self.url, self.http_ver)
         for key, value in self.headers.items():
             data += '\n{}: {}'.format(key, value)
         return data
 
-        
+
 class HTTPReader(object):
     # FIXME: This all needs done with byte level IO
     # There are several over performance offenses
     max_header_lines = 32
     max_data_lines = 1024
-    line_break = b'\r\n'
-    
+
     def read_head(self, rfile):
         request = b''
         headers = 0
@@ -35,7 +41,7 @@ class HTTPReader(object):
             line = rfile.readline()
             # print(line, flush=True)
             request += line
-            if not line or line == self.line_break:
+            if not line or line == BREAK:
                 break
             headers += 1
         return request
@@ -62,7 +68,7 @@ class HTTPReader(object):
         }
         
     def parse_head(self, data):
-        data = [_ for _ in data.split(self.line_break) if _]
+        data = [_ for _ in data.split(BREAK) if _]
         if not data:
             return None
         method_line_data = self.parse_method_line(data[0])
