@@ -16,9 +16,15 @@ class Request(object):
         self.data = data
 
     def write(self, wfile):
-        lines = ['{} {} {}'.format(self.method, self.url, self.http_ver)]
-        for key, value in self.headers.items():
-            lines.append('{}: {}'.format(key, value))
+        lines = [b'%s %s %s' % (self.method, self.url, self.http_ver)]
+        for key, values in self.headers.items():
+            for value in values:
+                lines.append(b'%s: %s' % (key, value))
+        lines.append(b'')
+        wfile.write(BREAK.join(lines))
+        if self.data:
+            wfile.write(self.data)
+        wfile.write(BREAK)
 
     def __str__(self):
         data = '{} {} {}'.format(
