@@ -138,14 +138,26 @@ class Handler(StreamRequestHandler):
         else:
             return hosts[0]
 
+    def infer_host(self, host_header):
+        parts = host_header.split(b':')
+        if len(parts) > 2 or len(parts) < 1:
+            raise ValueError('Malformed host: {}'.format(host_header))
+        elif len(parts) == 1:
+            host = parts[0]
+            port = self.server.bind[1]
+        elif len(parst) == 2:
+            host, port = parts
+        return host, port
+
     def handle(self):
         try:
             request = HTTPReader().read_request(self.rfile)
             print('\nRequest:')
             print(str(request), flush=True)
             if request:
-                destination = self.require_request_host(request)
-                print('To', destination)
+                dst_header = self.require_request_host(request)
+                dst_addr = self.infer_host(dst_header)
+                print('To', dst_addr)
                 print('---------')
                 request.write(BytesWriter(sys.stdout))
                 print('---------')
