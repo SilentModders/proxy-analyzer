@@ -88,7 +88,7 @@ class HTTPReader(object):
         return Request(method, url, http_ver, headers)
 
     def read_data(self, rfile, length):
-        length = min(max_data_length, length)
+        length = min(self.max_data_length, length)
         return rfile.read(length)
 
     def read_request(self, rfile):
