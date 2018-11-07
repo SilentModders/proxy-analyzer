@@ -4,16 +4,9 @@ import sys
 import traceback
 from socketserver import StreamRequestHandler
 from base_server import ServerProgram
+from utils import BytesWriter
 
 BREAK = b'\r\n'
-
-
-class BytesWriter(object):
-    def __init__(self, fp):
-        self.fp = fp
-
-    def write(self, data):
-        self.fp.write(data.decode())
 
 
 class Request(object):

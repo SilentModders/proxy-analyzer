@@ -110,3 +110,14 @@ class ServiceProgram(object):
             return 1
         cls.run_service(argv[1])
         return 0
+
+
+class BytesWriter(object):
+    """
+    For printing byte strings
+    """
+    def __init__(self, fp):
+        self.fp = fp
+
+    def write(self, data):
+        self.fp.write(data.decode())
