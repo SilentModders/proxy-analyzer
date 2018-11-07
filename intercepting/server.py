@@ -27,7 +27,7 @@ class Handler(StreamRequestHandler):
         elif len(parts) == 1:
             host = parts[0]
             port = self.server.bind[1]
-        elif len(parst) == 2:
+        elif len(parts) == 2:
             host, port = parts
             try:
                 port = int(port)
