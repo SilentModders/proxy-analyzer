@@ -29,7 +29,7 @@ class Request(object):
         for key, values in self.headers.items():
             for value in values:
                 lines.append(b'%s: %s' % (key, value))
-        lines.append(b'')
+        lines += [b'', b'']
         wfile.write(BREAK.join(lines))
         if self.data:
             wfile.write(self.data)
@@ -161,6 +161,7 @@ class Handler(StreamRequestHandler):
             if request:
                 dst_header = self.require_request_host(request)
                 dst_addr = self.infer_host(dst_header)
+                print('---------')
                 print('To', dst_addr)
                 print('---------')
                 request.write(BytesWriter(sys.stdout))
