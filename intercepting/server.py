@@ -43,7 +43,7 @@ class HTTPReader(object):
     # FIXME: This all needs done with byte level IO
     # There are several over performance offenses
     max_header_lines = 32
-    max_data_lines = 1024
+    max_data_length = 1048576
 
     def read_head(self, rfile):
         request = b''
@@ -95,15 +95,9 @@ class HTTPReader(object):
                 headers[key] = headers.get(key, []) + [value]
         return Request(method, url, http_ver, headers)
 
-    def read_data(self, rfile):
-        data = b''
-        lines = 0
-        while(lines < self.max_data_lines):
-            line = rfile.readline()
-            data += line
-            if not line:
-                return data
-            lines += 1
+    def read_data(self, rfile, length):
+        length = min(max_data_length, length)
+        return rfile.read(length)
 
     def read_request(self, rfile):
         head = self.read_head(rfile)
@@ -119,7 +113,7 @@ class HTTPReader(object):
                     length = int(length_headers[0])
                 except ValueError:
                     raise ValueError('Invalid "content-length"')
-                request.data = self.read_data(rfile)
+                request.data = self.read_data(rfile, length)
         return request
 
 
