@@ -138,7 +138,14 @@ class Handler(StreamRequestHandler):
             port = self.server.bind[1]
         elif len(parst) == 2:
             host, port = parts
-        return host, port
+            try:
+                port = int(port)
+            except ValueError:
+                raise ValueError(
+                    'Invalid port on host header: {}'.format(host_header)
+                )
+
+        return host.strip(), port
 
     def handle(self):
         try:
