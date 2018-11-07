@@ -156,8 +156,8 @@ class Handler(StreamRequestHandler):
     def handle(self):
         try:
             request = HTTPReader().read_request(self.rfile)
-            print('\nRequest:')
-            print(str(request), flush=True)
+            # print('\nRequest:')
+            # print(str(request), flush=True)
             if request:
                 dst_header = self.require_request_host(request)
                 dst_addr = self.infer_host(dst_header)
