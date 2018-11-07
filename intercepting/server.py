@@ -9,7 +9,7 @@ from utils import BytesWriter
 
 
 class Handler(StreamRequestHandler):
-    canned_500 = b'HTTP 500 E\r\nConnection: Closed\r\n\r\nGoodbye'
+    canned_500 = b'HTTP/1.1 500 E\r\nConnection: Closed\r\n\r\nGoodbye'
 
     def require_request_host(self, request):
         hosts = request.headers.get(b'host', [])
