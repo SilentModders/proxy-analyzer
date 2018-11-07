@@ -40,7 +40,9 @@ class Request(object):
             self.method.decode(), self.url.decode(), self.http_ver.decode()
         )
         for key, value in self.headers.items():
-            data += '\n{}: {}'.format(key.decode(), value)
+            data += '\n{}: {}'.format(
+                key.decode(), [_.decode() for _ in value]
+            )
         return data
 
 
