@@ -19,12 +19,7 @@ class Request(object):
                 yield b'%s: %s%s' % (key, value, BREAK)
         yield BREAK
         if self.data:
-            while True:
-                data = self.data(chunk_size)
-                if data:
-                    yield data
-                else:
-                    break
+            yield self.data
 
     def as_file(self):
         return IterStream(self._bytes())
