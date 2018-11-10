@@ -91,8 +91,7 @@ class TLSMixIn(object):
         return ssock
 
 
-# class TCPServer(ThreadingMixIn, BaseServer):
-class TCPServer(BaseServer):
+class TCPServer(ThreadingMixIn, BaseServer):
     def make_socket(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
