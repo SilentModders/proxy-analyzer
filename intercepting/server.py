@@ -53,16 +53,13 @@ class Handler(StreamRequestHandler):
         wrote_response = False
         try:
             request = HTTPReader().read_request(self.rfile)
-            # print('\nRequest:')
-            # print(str(request), flush=True)
+            print('\nRequest:')
+            print(str(request), flush=True)
             if request:
                 dst_header = self.require_request_host(request)
                 dst_host, dst_port = self.infer_host(dst_header)
                 dst_proto = self.infer_protocol()
                 dst_url = '{}://{}:{}'.format(dst_proto, dst_host, dst_port)
-                print('----------------------')
-                print(dst_url)
-                print('----------------------')
                 # HACK
                 request.headers[b'connection'] = [b'close']
                 self.connect_upstream(dst_url, request.as_file(), self.wfile)

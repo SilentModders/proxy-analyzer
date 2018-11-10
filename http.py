@@ -43,6 +43,9 @@ class Request(object):
             data += '\n{}: {}'.format(
                 key.decode(), [_.decode() for _ in value]
             )
+        if self.data:
+            data += '\n\n{}'.format(self.data.decode())
+
         return data
 
 
