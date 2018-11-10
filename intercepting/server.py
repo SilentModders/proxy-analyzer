@@ -73,8 +73,6 @@ class Handler(StreamRequestHandler):
                     self.wfile.write(self.canned_500)
             except:
                 pass
-            sys.stderr.flush()
-            sys.stdout.flush()
 
 
 class Server(ServerProgram):
