@@ -83,7 +83,7 @@ class ClientPipe(object):
             super().__init__(*args, **kwargs)
 
         def handle(self):
-            while(True):
+            while True:
                 data = self.pipe_rfile.read(self.chunk_size)
                 if data:
                     self.wfile.write(data)

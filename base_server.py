@@ -37,7 +37,7 @@ class BaseServer(object):
         while not self._shutdown:
             try:
                 self.serve_one_client()
-            except BaseException as e:
+            except:
                 traceback.print_exc()
                 sys.stderr.flush()
 
