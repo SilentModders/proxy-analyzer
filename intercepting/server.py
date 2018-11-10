@@ -38,6 +38,10 @@ class Handler(StreamRequestHandler):
 
         return host.strip().decode(), port
 
+    def infer_protocol(self):
+        isTLS = isinstance(self.server, TLSServer)
+        return 'tls' if isTLS else 'tcp'
+
     def handle(self):
         try:
             request = HTTPReader().read_request(self.rfile)
