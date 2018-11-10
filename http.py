@@ -1,3 +1,5 @@
+from utils import IterStream
+
 BREAK = b'\r\n'
 
 
@@ -8,6 +10,24 @@ class Request(object):
         self.http_ver = http_ver or b'HTTP/1.1'
         self.headers = headers or {}
         self.data = data
+
+    def _bytes(self):
+        chunk_size = 4096
+        yield b'%s %s %s%s' % (self.method, self.url, self.http_ver, BREAK)
+        for key, values in self.headers.items():
+            for value in values:
+                yield b'%s: %s%s' % (key, value, BREAK)
+        yield BREAK
+        if self.data:
+            while True:
+                data = self.data(chunk_size)
+                if data:
+                    yield data
+                else:
+                    break
+
+    def as_file(self):
+        return IterStream(self._bytes())
 
     def write(self, wfile):
         lines = [b'%s %s %s' % (self.method, self.url, self.http_ver)]
