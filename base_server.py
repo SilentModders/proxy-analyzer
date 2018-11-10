@@ -55,8 +55,21 @@ class BaseServer(object):
 
 
 class ThreadingMixIn(object):
+    @staticmethod
+    def _wrapper(target):
+        def wrapper(*args, **kwargs):
+            try:
+                target(*args, **kwargs)
+            except:  # Don't ask me why we need this for threads
+                traceback.print_exc()
+                sys.stderr.flush()
+                raise
+
+        return wrapper
+
     def handle_client(self, client, address):
-        thread = Thread(target=super().handle_client, args=(client, address))
+        target = self._wrapper(super().handle_client)
+        thread = Thread(target=target, args=(client, address))
         thread.start()
 
 
