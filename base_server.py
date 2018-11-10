@@ -1,7 +1,9 @@
+import sys
 import ssl
 import socket
 from socketserver import StreamRequestHandler
 from threading import Thread
+import traceback
 from utils import UDPStreamSocket, create_service, ServiceProgram
 
 
@@ -33,7 +35,11 @@ class BaseServer(object):
 
     def serve_forever(self):
         while not self._shutdown:
-            self.serve_one_client()
+            try:
+                self.serve_one_client()
+            except BaseException as e:
+                traceback.print_exc()
+                sys.stderr.flush()
 
     def shutdown(self):
         if self.socket is not None:
