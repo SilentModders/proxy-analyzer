@@ -71,3 +71,35 @@ class ClientProgram(ServiceProgram):
     def run_service(cls, url):
         client = cls.create_client(url)
         client.startup()
+
+
+class ClientPipe(object):
+    class Handler(StreamRequestHandler):
+        chunk_size = 4096
+
+        def __init__(self, pipe_rfile, pipe_wfile, *args, **kwargs):
+            self.pipe_rfile = pipe_rfile
+            self.pipe_wfile = pipe_wfile
+            super().__init__(*args, **kwargs)
+
+        def handle(self):
+            while(True):
+                data = self.pipe_rfile.read(self.chunk_size)
+                if data:
+                    print(data)
+                    self.wfile.write(data)
+                else:
+                    break
+            while(True):
+                data = self.rfile.read(self.chunk_size)
+                if data:
+                    self.pipe_wfile.write(data)
+                else:
+                    break
+
+    def __init__(self, rfile, wfile):
+        self.rfile = rfile
+        self.wfile = wfile
+
+    def make_handler(self, *args, **kwargs):
+        return self.Handler(self.rfile, self.wfile, *args, **kwargs)
