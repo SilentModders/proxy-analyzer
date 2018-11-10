@@ -116,9 +116,27 @@ class BytesWriter(object):
     """
     For printing byte strings
     """
+
     def __init__(self, fp):
         self.fp = fp
 
     def write(self, data):
         self.fp.write(data.decode())
         self.fp.flush()
+
+
+class IterStream(object):
+    def __init__(self, iterator):
+        self.iterator = iterator
+        self.buffer = b''
+
+    def read(self, size):
+        while len(self.buffer) < size:
+            try:
+                self.buffer += next(self.iterator)
+            except StopIteration:
+                break
+
+        data = self.buffer[:size]
+        self.buffer = self.buffer[size:]
+        return data
