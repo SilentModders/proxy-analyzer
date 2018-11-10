@@ -3,13 +3,20 @@ import re
 import sys
 import traceback
 from socketserver import StreamRequestHandler
-from base_server import ServerProgram
+from base_server import ServerProgram, TLSServer
+from base_client import ClientProgram, ClientPipe
 from http import Request, HTTPReader
 from utils import BytesWriter
 
 
 class Handler(StreamRequestHandler):
     canned_500 = b'HTTP/1.1 500 E\r\nConnection: Closed\r\n\r\nGoodbye'
+
+    def connect_upstream(self, url, pipe_rfile, pipe_wfile):
+        class Client(ClientProgram):
+            handler = ClientPipe(pipe_rfile, pipe_wfile).make_handler
+
+        Client().run_service(url)
 
     def require_request_host(self, request):
         hosts = request.headers.get(b'host', [])
@@ -49,12 +56,15 @@ class Handler(StreamRequestHandler):
             # print(str(request), flush=True)
             if request:
                 dst_header = self.require_request_host(request)
-                dst_addr = self.infer_host(dst_header)
-                print('---------')
-                print('To', dst_addr)
-                print('---------')
-                request.write(BytesWriter(sys.stdout))
-                print('---------')
+                dst_host, dst_port = self.infer_host(dst_header)
+                dst_proto = self.infer_protocol()
+                dst_url = '{}://{}:{}'.format(dst_proto, dst_host, dst_port)
+                print('----------------------')
+                print(dst_url)
+                print('----------------------')
+                # HACK
+                request.headers[b'connection'] = [b'close']
+                self.connect_upstream(dst_url, request.as_file(), self.wfile)
         finally:
             try:
                 self.wfile.write(self.canned_500)
