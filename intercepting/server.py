@@ -50,6 +50,7 @@ class Handler(StreamRequestHandler):
         return 'tls' if isTLS else 'tcp'
 
     def handle(self):
+        wrote_response = False
         try:
             request = HTTPReader().read_request(self.rfile)
             # print('\nRequest:')
@@ -65,9 +66,11 @@ class Handler(StreamRequestHandler):
                 # HACK
                 request.headers[b'connection'] = [b'close']
                 self.connect_upstream(dst_url, request.as_file(), self.wfile)
+                wrote_response = True
         finally:
             try:
-                self.wfile.write(self.canned_500)
+                if not wrote_response:
+                    self.wfile.write(self.canned_500)
             except:
                 pass
             sys.stderr.flush()
