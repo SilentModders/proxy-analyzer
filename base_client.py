@@ -86,7 +86,6 @@ class ClientPipe(object):
             while(True):
                 data = self.pipe_rfile.read(self.chunk_size)
                 if data:
-                    print(data)
                     self.wfile.write(data)
                 else:
                     break
