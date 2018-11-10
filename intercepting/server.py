@@ -36,7 +36,7 @@ class Handler(StreamRequestHandler):
                     'Invalid port on host header: {}'.format(host_header)
                 )
 
-        return host.strip(), port
+        return host.strip().decode(), port
 
     def handle(self):
         try:
