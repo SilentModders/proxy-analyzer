@@ -60,7 +60,7 @@ class Handler(StreamRequestHandler):
                 dst_host, dst_port = self.infer_host(dst_header)
                 dst_proto = self.infer_protocol()
                 dst_url = '{}://{}:{}'.format(dst_proto, dst_host, dst_port)
-                # HACK
+                # HACK: Needed to detect EOF
                 request.headers[b'connection'] = [b'close']
                 self.connect_upstream(dst_url, request.as_file(), self.wfile)
                 wrote_response = True
