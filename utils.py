@@ -125,6 +125,18 @@ class BytesWriter(object):
         self.fp.flush()
 
 
+class BytesReader(object):
+    """
+    For reading as byte strings
+    """
+
+    def __init__(self, fp):
+        self.fp = fp
+
+    def read(self, size):
+        return self.fp.read(size).encode()
+
+
 class IterStream(object):
     def __init__(self, iterator):
         self.iterator = iterator
