@@ -14,7 +14,9 @@ class Handler(StreamRequestHandler):
 
     def connect_upstream(self, url, pipe_rfile, pipe_wfile):
         class Client(ClientProgram):
-            handler = ClientPipe(pipe_rfile, pipe_wfile).make_handler
+            log_file = BytesWriter(sys.stdout)
+            pipe = ClientPipe(pipe_rfile, pipe_wfile, log_file)
+            handler = pipe.make_handler
 
         Client().run_service(url)
 

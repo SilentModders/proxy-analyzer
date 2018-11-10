@@ -77,9 +77,10 @@ class ClientPipe(object):
     class Handler(StreamRequestHandler):
         chunk_size = 4096
 
-        def __init__(self, pipe_rfile, pipe_wfile, *args, **kwargs):
+        def __init__(self, pipe_rfile, pipe_wfile, log_file, *args, **kwargs):
             self.pipe_rfile = pipe_rfile
             self.pipe_wfile = pipe_wfile
+            self.log_file = log_file
             super().__init__(*args, **kwargs)
 
         def handle(self):
@@ -93,12 +94,16 @@ class ClientPipe(object):
                 data = self.rfile.read(self.chunk_size)
                 if data:
                     self.pipe_wfile.write(data)
+                    if self.log_file:
+                        self.log_file.write(data)
                 else:
                     break
 
-    def __init__(self, rfile, wfile):
+    def __init__(self, rfile, wfile, log_file=None):
         self.rfile = rfile
         self.wfile = wfile
+        self.log_file = log_file
 
     def make_handler(self, *args, **kwargs):
-        return self.Handler(self.rfile, self.wfile, *args, **kwargs)
+        return self.Handler(
+            self.rfile, self.wfile, self.log_file, *args, **kwargs)
