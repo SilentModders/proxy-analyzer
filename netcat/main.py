@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import sys
-from base_client import ClientPipe
 from base_client import ClientProgram, ClientPipe
 from utils import IterStream, BytesWriter
 
