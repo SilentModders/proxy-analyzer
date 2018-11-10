@@ -121,3 +121,4 @@ class BytesWriter(object):
 
     def write(self, data):
         self.fp.write(data.decode())
+        self.fp.flush()
