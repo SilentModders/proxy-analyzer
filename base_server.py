@@ -37,6 +37,8 @@ class BaseServer(object):
         while not self._shutdown:
             try:
                 self.serve_one_client()
+            except KeyboardInterrupt:
+                raise
             except:
                 traceback.print_exc()
                 sys.stderr.flush()
