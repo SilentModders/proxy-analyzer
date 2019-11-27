@@ -78,6 +78,7 @@ class ThreadingMixIn(object):
 class TLSMixIn(object):
     certificate_path = 'private/server.pem'
     private_key_path = 'private/server.key'
+    dh_params_path = 'private/dh_params.pem'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -86,6 +87,7 @@ class TLSMixIn(object):
             purpose=ssl.Purpose.CLIENT_AUTH)
         self.context.load_cert_chain(
             self.certificate_path, self.private_key_path)
+        self.context.load_dh_params(self.dh_params_path)
 
     def make_socket(self):
         sock = super().make_socket()
