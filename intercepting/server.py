@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 import sys
 from socketserver import StreamRequestHandler
 from base_server import ServerProgram, TLSServer
@@ -28,7 +29,11 @@ class Handler(StreamRequestHandler):
             return hosts[0]
 
     def infer_host(self, host_header):
-        parts = host_header.split(b':')
+        host_src = os.environ.get('PROXY_UPSTREAM')
+        if host_src is None:
+            host_src = host_header.decode()
+        print('HOST_SRC', host_src, flush=True)
+        parts = host_src.split(':')
         if len(parts) > 2 or len(parts) < 1:
             raise ValueError('Malformed host: {}'.format(host_header))
         elif len(parts) == 1:
@@ -43,7 +48,7 @@ class Handler(StreamRequestHandler):
                     'Invalid port on host header: {}'.format(host_header)
                 )
 
-        return host.strip().decode(), port
+        return host.strip(), port
 
     def infer_protocol(self):
         isTLS = isinstance(self.server, TLSServer)
