@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-import re
 import sys
-import traceback
 from socketserver import StreamRequestHandler
 from base_server import ServerProgram, TLSServer
 from base_client import ClientProgram, ClientPipe
